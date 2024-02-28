@@ -1,17 +1,20 @@
 #include <iostream>
-template<typename T1>
+template<typename T>
 struct power{
-    T1 Pow(T1 mantissa,int exponent){
+    T mantissa;
+    power(T mantissa):mantissa(mantissa){}
+    T Pow(int exponent){
         if(exponent==0){
             return 1;
-        } else{
-            return mantissa* Pow(mantissa,exponent-1);
+        } else if(exponent >0){
+            return mantissa* Pow(exponent-1);
+        }else{
+            return 1/mantissa* Pow(exponent+1);
         }
     }
 };
 int main() {
-    //std::cout << "Hello, World!" << std::endl;
-    power<double> value;
-    std::cout<<"5^2= "<<value.Pow(2.2,2)<<"\n";
+    power<double> value(2);
+    std::cout<<"4^2= "<<value.Pow(2)<<"\n";
     return 0;
 }
