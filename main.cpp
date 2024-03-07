@@ -1,42 +1,34 @@
-#include <iostream>
-//#include <cmath>
 #include <type_traits>
+#include <iostream>
 
-template<int exp,typename Enable=void>
-struct power;
+struct S{
+    template<int Exp, typename T = double, typename enable = void>
+    struct pow{
+        constexpr T operator()(T bas){
+            pow<Exp -1, T> next;    // recursive call to any of the power functions inside S struct
+            return next(bas) * bas;
+        }
+    };
 
-template<int exp>
-struct power<exp, std::enable_if_t<(exp == 0)>> {
     template<typename T>
-    static constexpr T Pow(T mantissa) {
-        return 1;
-    }
+    struct pow<0, T>{
+        constexpr T operator()(T bas){
+            return bas == (T)0 ? (T)0 :(T)1;
+        }
+    };
+
+    template<int Exp, typename T>   // negativa siffror
+    struct pow<Exp, T, typename std::enable_if_t<Exp < 0>> {
+        constexpr T operator()(T bas) {
+            pow<Exp + 1, T> next;   // recursive call to any of the power functions inside S struct
+            return next(bas) * 1 / bas;
+        }
+    };
 };
 
-template<int exp>
-struct power<exp, std::enable_if_t<(exp > 0)>> {
-    template<typename T>
-    static constexpr T Pow(T mantissa) {
-        return mantissa * power<exp-1>::Pow(mantissa);
-    }
-};
-
-template<int exp>
-struct power<exp, std::enable_if_t<(exp < 0)>> {
-    template<typename T>
-    static constexpr T Pow(T mantissa) {
-        return 1 / (mantissa * power<exp + 1>::Pow(mantissa));
-    }
-};
-
-
-
-
-int main() {
-
-    constexpr auto static mantissan=2;
-    constexpr auto static exponenten=2;
-    std::cout<<mantissan<<" upphöjt med "<<exponenten<<" ger "<<power<exponenten>::Pow(mantissan);
-
-    return 0;
+int main(){
+    constexpr auto mantissa=2; //compile-time constant
+    constexpr auto exponent=-1; //compile-time constant
+    S::pow<exponent> value;
+    std::cout<<mantissa<<" upphöjt med "<<exponent<<" ger "<<value(mantissa) << std::endl;
 }
