@@ -13,7 +13,8 @@ struct S{
     template<typename T>
     struct pow<0, T>{
         constexpr T operator()(T bas){
-            return bas == (T)0 ? (T)0 :(T)1;
+            //return bas == (T)0 ? (T)0 :(T)1;
+            return 1;
         }
     };
 
@@ -27,8 +28,8 @@ struct S{
 };
 
 int main(){
-    constexpr auto mantissa=2; //compile-time constant
-    constexpr auto exponent=-1; //compile-time constant
+    constexpr auto mantissa=2.5; //compile-time constant
+    constexpr auto exponent=-2; //compile-time constant
     S::pow<exponent> value;
     std::cout<<mantissa<<" upphöjt med "<<exponent<<" ger "<<value(mantissa) << std::endl;
 }
