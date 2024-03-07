@@ -1,20 +1,42 @@
 #include <iostream>
-template<typename T>
-struct power{
-    T mantissa;
-    power(T mantissa):mantissa(mantissa){}
-    T Pow(int exponent){
-        if(exponent==0){
-            return 1;
-        } else if(exponent >0){
-            return mantissa* Pow(exponent-1);
-        }else{
-            return 1/mantissa* Pow(exponent+1);
-        }
+//#include <cmath>
+#include <type_traits>
+
+template<int exp,typename Enable=void>
+struct power;
+
+template<int exp>
+struct power<exp, std::enable_if_t<(exp == 0)>> {
+    template<typename T>
+    static constexpr T Pow(T mantissa) {
+        return 1;
     }
 };
+
+template<int exp>
+struct power<exp, std::enable_if_t<(exp > 0)>> {
+    template<typename T>
+    static constexpr T Pow(T mantissa) {
+        return mantissa * power<exp-1>::Pow(mantissa);
+    }
+};
+
+template<int exp>
+struct power<exp, std::enable_if_t<(exp < 0)>> {
+    template<typename T>
+    static constexpr T Pow(T mantissa) {
+        return 1 / (mantissa * power<exp + 1>::Pow(mantissa));
+    }
+};
+
+
+
+
 int main() {
-    power<double> value(2);
-    std::cout<<"4^2= "<<value.Pow(2)<<"\n";
+
+    constexpr auto static mantissan=2;
+    constexpr auto static exponenten=2;
+    std::cout<<mantissan<<" upphöjt med "<<exponenten<<" ger "<<power<exponenten>::Pow(mantissan);
+
     return 0;
 }
